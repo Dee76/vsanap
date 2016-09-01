@@ -38,20 +38,22 @@ else
 fi
 
 # Run InfluxDB container ...
+echo -e "\nRetrieving InfluxDB configuration file . . .\n"
+curl -s -o /opt/vsanap/influxdb/influxdb.conf https://raw.githubusercontent.com/Dee76/vsanap/master/influxdb/influxdb.conf
 echo -e "\nRunning InfluxDB Docker container . . .\n"
 docker run -d -p 8083:8083 -p 8086:8086 \
-  -v /opt/vsanap/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro \
-  influxdb -config /etc/influxdb/influxdb.conf \
-  --name vsanap/influxdb
+  --name vsanap/influxdb \
+  -v /opt/vsanap/influxdb:/etc/influxdb:ro \
+  influxdb -config /etc/influxdb/influxdb.conf
 
 # Run Grafana Docker container on port 3000 with the default password, and mounting grafana config volume.
 echo -e "\nRunning a Grafana Docker container . . .\n"
 docker run -d -p 3000:3000 \
+  --name vsanap/grafana \
   -v /opt/vsanap/grafana:/opt/grafana \
   -e "GF_SERVER_ROOT_URL=http://$ip" \
   -e "GF_SECURITY_ADMIN_PASSWORD=$defaultPW" \
-  grafana/grafana \
-  --name vsanap/grafana
+  grafana/grafana
 
 echo -e "\nAccess VSANAP on http://$ip:3000 with admin password of $defaultPW"
 echo -e "Done.\n"
