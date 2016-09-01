@@ -20,6 +20,7 @@ ip=$(ip -f inet -o addr show eth0|cut -d\  -f 7 | cut -d/ -f 1) # Grab the IP ad
 # /opt/vsanap/grafana :: Contains vsanap grafana config files
 # /opt/vsanap/snap :: Contains vsanap snap config files and plugins
 # /opt/vsanap/influxdb :: Contains vsanap influxdb config files
+# /opt/vsanap/vsanapper :: Contains vsanapper python program for querying VSAN
 
 # Start and enable Docker.
 echo -e "\nStarting and enabling Docker . . ."
@@ -45,6 +46,22 @@ docker run -d -p 8083:8083 -p 8086:8086 \
   --name vsanap_influxdb \
   -v /opt/vsanap/influxdb:/etc/influxdb:ro \
   influxdb -config /etc/influxdb/influxdb.conf
+
+# Run Python container for vsanapper.
+echo -e "\nRetrieving VSANAPper . . .\n"
+# curl -s -o /opt/vsanap/vsanapper/vsanapper.py https://raw.githubusercontent.com/Dee76/vsanap/master/vsanapper/vsanapper.py
+echo -e "\nRetrieving Python Docker container . . .\n"
+docker pull python
+
+# Executable for Snap to run, which will execute VSANAPper to get stats from VSAN
+#docker run -it --rm --name vsanap_vsanapper -v /opt/vsanap/vsanapper:/usr/src/myapp -w /usr/src/myapp python:3 python vsanapper.py
+
+# Run Snap Docker container.
+echo -e "\nRunning a Snap Docker container . . .\n"
+docker run -d -p 8181:8181 \
+  --name vsanap_snap \
+  -v /opt/vsanap/snap:/opt/snap \
+  edyesed/intelsdi-snap
 
 # Run Grafana Docker container on port 3000 with the default password, and mounting grafana config volume.
 echo -e "\nRunning a Grafana Docker container . . .\n"
