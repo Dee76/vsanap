@@ -34,7 +34,6 @@ else
   echo -e " - Enabling Docker . . ."
   systemctl enable docker
 fi
-echo -e "\n"
 
 # Run InfluxDB container ...
 echo -e "Running InfluxDB Docker container . . .\n"
@@ -51,5 +50,5 @@ docker run -d -p 3000:3000 \
   grafana/grafana
 
 echo -e "\nAccess VSANAP on http://$ip:3000 with admin password of $defaultPW"
-echo -e "\nDone."
+echo -e "Done.\n"
 exit
